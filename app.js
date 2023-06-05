@@ -10,7 +10,8 @@ const Dishes = require("./models/dishes");
 const Comments = require("./models/comments");
 const mongoose = require("mongoose");
 const dishesRouter = require("./routes/dishes");
-
+const promotionsRouter = require("./routes/promotions");
+const leaderRouter = require("./routes/leaders");
 const DATABASE = process.env.DATABASE;
 const url = `mongodb://127.0.0.1:27017/${DATABASE}`;
 
@@ -29,6 +30,8 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/dishes", dishesRouter);
+app.use("/promotions", promotionsRouter);
+app.use("/leaders", leaderRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
