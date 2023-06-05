@@ -14,13 +14,14 @@ const promotionsRouter = require("./routes/promotions");
 const leaderRouter = require("./routes/leaders");
 const DATABASE = process.env.DATABASE;
 const url = `mongodb://127.0.0.1:27017/${DATABASE}`;
+const cookieParser = require("cookie-parser");
 
 var app = express();
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
-
+app.use(auth);
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -32,6 +33,31 @@ app.use("/users", usersRouter);
 app.use("/dishes", dishesRouter);
 app.use("/promotions", promotionsRouter);
 app.use("/leaders", leaderRouter);
+
+function auth(req, res, next) {
+    console.log("request headers>>", req.headers);
+    let authHeader = req.headers.authorization;
+    if (!authHeader) {
+        let err = new Error("You are not authenticated");
+        res.setHeader("WWW-Authenticate", "Basic");
+        err.status = 401;
+        next(err);
+        return;
+    }
+    let auth = new Buffer.from(authHeader.split(" ")[1], "base64")
+        .toString()
+        .split(":");
+    let username = auth[0];
+    let password = auth[1];
+    if (username === "admin" && password === "password") {
+        next();
+    } else {
+        let err = new Error("You are not authenticated");
+        res.setHeader("WWW-Authenticate", "Basic");
+        err.status = 401;
+        next(err);
+    }
+}
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -50,11 +76,14 @@ app.use(function (err, req, res, next) {
 });
 
 const connect = mongoose.connect(url);
+
 connect.then(
-    () => {
-        console.log("Connect to db successful");
+    (db) => {
+        console.log("Connected correctly to server");
     },
-    (err) => console.log("err>>", err.message)
+    (err) => {
+        console.log(err);
+    }
 );
 
 module.exports = app;
