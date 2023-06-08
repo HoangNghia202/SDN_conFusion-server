@@ -46,39 +46,19 @@ app.use("/leaders", leaderRouter);
 
 app.use(cookieParser("12345-67890"));
 function auth(req, res, next) {
-    console.log("request headers>>", req.headers);
-    if (!req.session.user) {
-        let authHeader = req.headers.authorization;
-        if (!authHeader) {
-            let err = new Error("You are not authenticated");
-            res.setHeader("WWW-Authenticate", "Basic");
-            err.status = 401;
-            next(err);
-            return;
-        }
-        let auth = new Buffer.from(authHeader.split(" ")[1], "base64")
-            .toString()
-            .split(":");
-        let username = auth[0];
-        let password = auth[1];
-        if (username === "admin" && password === "password") {
-            session.user = "admin";
-            next();
-        } else {
-            let err = new Error("You are not authenticated");
-            res.setHeader("WWW-Authenticate", "Basic");
-            err.status = 401;
-            next(err);
-        }
-    } else {
-        if (req.session.user === "admin") {
-            console.log("req.session: ", req.session);
+    console.log(req.session);
 
+    if (!req.session.user) {
+        var err = new Error("You are not authenticated!");
+        err.status = 403;
+        return next(err);
+    } else {
+        if (req.session.user === "authenticated") {
             next();
         } else {
-            let err = new Error("You are not authenticated");
-            err.status = 401;
-            next(err);
+            var err = new Error("You are not authenticated!");
+            err.status = 403;
+            return next(err);
         }
     }
 }
