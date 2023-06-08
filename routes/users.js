@@ -7,6 +7,8 @@ router.get("/", function (req, res, next) {
 });
 
 router.post("/signup", (req, res, next) => {
+    console.log("req.body", req.body.username);
+
     User.findOne({ username: req.body.username })
         .then((user) => {
             if (user != null) {

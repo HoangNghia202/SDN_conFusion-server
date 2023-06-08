@@ -32,7 +32,7 @@ app.use(
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
 app.use(cookieParser("12345-67890"));
-app.use(auth);
+
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -47,7 +47,7 @@ app.use("/leaders", leaderRouter);
 app.use(cookieParser("12345-67890"));
 function auth(req, res, next) {
     console.log(req.session);
-
+    console.log(req);
     if (!req.session.user) {
         var err = new Error("You are not authenticated!");
         err.status = 403;
