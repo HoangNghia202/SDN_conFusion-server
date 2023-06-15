@@ -11,14 +11,16 @@ const dishesRouter = require("./routes/dishes");
 const promotionsRouter = require("./routes/promotions");
 const leaderRouter = require("./routes/leaders");
 const DATABASE = process.env.DATABASE;
-const url = `mongodb://127.0.0.1:27017/${DATABASE}`;
 const session = require("express-session");
 const FileStore = require("session-file-store")(session);
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const User = require("./models/users");
-// const authenticate = require("./authenticate");
+const config = require("./config");
+const authenticate = require("./authenticate");
 var app = express();
+
+const url = config.mongoUrl;
 
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
@@ -68,7 +70,7 @@ function auth(req, res, next) {
     }
 }
 
-app.use(auth);
+// app.use(auth);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
