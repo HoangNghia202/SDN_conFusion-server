@@ -6,8 +6,20 @@
     "start": "node ./bin/www",
     "dev": "nodemon ./bin/www"
   },
+  "nodemonConfig": {
+    "restartable": "rs",
+    "ignore": [
+      "node_modules/**/node_modules",
+      "./sessions/*"
+    ],
+    "delay": "2500",
+    "env": {
+      "NODE_ENV": "development"
+    }
+  },
   "dependencies": {
     "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
     "debug": "~2.6.9",
     "dotenv": "^16.0.3",
     "express": "~4.16.1",

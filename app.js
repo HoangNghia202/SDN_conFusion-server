@@ -32,10 +32,7 @@ app.use(
         secret: "12345-67890",
         saveUninitialized: false,
         resave: false,
-        store: new FileStore(),
-        cookie: {
-            maxAge: 1000 * 60 * 2,
-        },
+        store: new FileStore({ logFn: function () {} }),
     })
 );
 
@@ -57,7 +54,7 @@ app.use("/dishes", dishesRouter);
 app.use("/promotions", promotionsRouter);
 app.use("/leaders", leaderRouter);
 
-app.use(cookieParser("12345-67890"));
+// app.use(cookieParser("12345-67890"));
 
 function auth(req, res, next) {
     console.log("req.user >>", req.user);

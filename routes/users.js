@@ -3,9 +3,16 @@ var router = express.Router();
 const passport = require("passport");
 const User = require("../models/users");
 const authenticate = require("../authenticate");
+const { verifyUser, verifyAdmin } = require("../authenticate");
 /* GET users listing. */
-router.get("/", function (req, res, next) {
-    res.send("respond with a resource");
+router.get("/", verifyUser, verifyAdmin, function (req, res, next) {
+    User.find({})
+        .then((users) => {
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "application/json");
+            res.json(users);
+        })
+        .catch((err) => next(err));
 });
 
 router.post("/signup", (req, res, next) => {
@@ -14,23 +21,26 @@ router.post("/signup", (req, res, next) => {
     User.register(
         new User({ username: req.body.username }),
         req.body.password,
-        (err, user) => {
+        async (err, user) => {
             console.log("user: ", user);
-
             if (err) {
                 res.statusCode = 500;
                 res.setHeader("Content-Type", "application/json");
                 res.json({ err: err });
             } else {
+                if (req.body.firstName) user.firstName = req.body.firstName;
+                if (req.body.lastName) user.lastName = req.body.lastName;
+
+                await user.save();
                 passport.authenticate("local")(req, res, () => {
                     res.statusCode = 200;
                     res.setHeader("Content-Type", "application/json");
                     res.json({
                         success: true,
                         status: "Registration Successful!",
+                        user: user,
                     });
                 });
-                console.log("User created");
             }
         }
     );
@@ -49,7 +59,11 @@ router.post("/login", passport.authenticate("local"), (req, res) => {
 
 router.get("/logout", (req, res) => {
     if (req.session) {
-        req.session.destroy();
+        req.session.destroy((err) => {
+            if (err) {
+                console.log(err);
+            }
+        });
         res.clearCookie("session-id");
         res.redirect("/");
     } else {
