@@ -2,6 +2,7 @@ const express = require("express");
 const leaderRouter = express.Router();
 const Leaders = require("../models/leader");
 const { verifyUser, verifyAdmin } = require("../authenticate");
+const { cors, corsWithOptions } = require("./cors");
 leaderRouter
     .route("/")
     .get((req, res, next) => {
@@ -16,7 +17,7 @@ leaderRouter
             )
             .catch((err) => next(err));
     })
-    .post(verifyUser, verifyAdmin, (req, res, next) => {
+    .post(corsWithOptions, verifyUser, verifyAdmin, (req, res, next) => {
         Leaders.create(req.body)
             .then(
                 (leader) => {
@@ -28,11 +29,11 @@ leaderRouter
             )
             .catch((err) => next(err));
     })
-    .put(verifyUser, verifyAdmin, (req, res, next) => {
+    .put(corsWithOptions, verifyUser, verifyAdmin, (req, res, next) => {
         res.statusCode = 403;
         res.end("PUT operation not supported on /leaders");
     })
-    .delete(verifyUser, verifyAdmin, (req, res, next) => {
+    .delete(corsWithOptions, verifyUser, verifyAdmin, (req, res, next) => {
         Leaders.remove({})
             .then(
                 (resp) => {
@@ -59,13 +60,13 @@ leaderRouter
             )
             .catch((err) => next(err));
     })
-    .post(verifyUser, verifyAdmin, (req, res, next) => {
+    .post(corsWithOptions, verifyUser, verifyAdmin, (req, res, next) => {
         res.statusCode = 403;
         res.end(
             `POST operation not supported on /leaders/${req.params.leaderId}`
         );
     })
-    .put(verifyUser, verifyAdmin, (req, res, next) => {
+    .put(corsWithOptions, verifyUser, verifyAdmin, (req, res, next) => {
         Leaders.findByIdAndUpdate(
             req.params.leaderId,
             {
@@ -83,7 +84,7 @@ leaderRouter
             )
             .catch((err) => next(err));
     })
-    .delete(verifyUser, verifyAdmin, (req, res, next) => {
+    .delete(corsWithOptions, verifyUser, verifyAdmin, (req, res, next) => {
         Leaders.findByIdAndRemove(req.params.leaderId)
             .then(
                 (resp) => {

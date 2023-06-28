@@ -2,6 +2,7 @@ const express = require("express");
 const promotionRouter = express.Router();
 const Promotions = require("../models/promotions");
 const { verifyAdmin, verifyUser } = require("../authenticate");
+const { cors, corsWithOptions } = require("./cors");
 promotionRouter
     .route("/")
     .get((req, res, next) => {
@@ -16,7 +17,7 @@ promotionRouter
             )
             .catch((err) => next(err));
     })
-    .post(verifyUser, verifyAdmin, (req, res, next) => {
+    .post(corsWithOptions, verifyUser, verifyAdmin, (req, res, next) => {
         Promotions.create(req.body)
             .then(
                 (promotion) => {
@@ -28,11 +29,11 @@ promotionRouter
             )
             .catch((err) => next(err));
     })
-    .put(verifyUser, verifyAdmin, (req, res, next) => {
+    .put(corsWithOptions, verifyUser, verifyAdmin, (req, res, next) => {
         res.statusCode = 403;
         res.end("PUT operation not supported on /promotions");
     })
-    .delete(verifyUser, verifyAdmin, (req, res, next) => {
+    .delete(corsWithOptions, verifyUser, verifyAdmin, (req, res, next) => {
         Promotions.remove({})
             .then(
                 (resp) => {
@@ -59,14 +60,14 @@ promotionRouter
             )
             .catch((err) => next(err));
     })
-    .post(verifyUser, verifyAdmin, (req, res, next) => {
+    .post(corsWithOptions, verifyUser, verifyAdmin, (req, res, next) => {
         res.statusCode = 403;
         res.end(
             "POST operation not supported on /promotions/" +
                 req.params.promotionId
         );
     })
-    .put(verifyUser, verifyAdmin, (req, res, next) => {
+    .put(corsWithOptions, verifyUser, verifyAdmin, (req, res, next) => {
         Promotions.findByIdAndUpdate(
             req.params.promotionId,
             { $set: req.body },
@@ -83,7 +84,7 @@ promotionRouter
             .catch((err) => next(err));
     })
 
-    .delete(verifyUser, verifyAdmin, (req, res, next) => {
+    .delete(corsWithOptions, verifyUser, verifyAdmin, (req, res, next) => {
         Promotions.findByIdAndRemove(req.params.promotionId)
             .then(
                 (resp) => {
