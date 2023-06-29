@@ -15,6 +15,7 @@ const session = require("express-session");
 const FileStore = require("session-file-store")(session);
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
+
 const User = require("./models/users");
 const config = require("./config");
 const authenticate = require("./authenticate");
